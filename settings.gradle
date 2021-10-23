@@ -1,2 +1,5 @@
 rootProject.name = 'JakesRTP1'
+include 'API'
+include 'Core'
+include 'API'
 
