@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Build &amp; Paper " type="JarApplication">
+    <option name="JAR_PATH" value="$PROJECT_DIR$/../../../Servers/_BuildTools/paper-1.17.1-98.jar" />
+    <option name="VM_PARAMETERS" value="-DIReallyKnowWhatIAmDoingISwear -Dcom.mojang.eula.agree=true" />
+    <option name="PROGRAM_PARAMETERS" value="--nogui" />
+    <option name="WORKING_DIRECTORY" value=".\testServer" />
+    <option name="ALTERNATIVE_JRE_PATH_ENABLED" value="true" />
+    <option name="ALTERNATIVE_JRE_PATH" value="16" />
+    <method v="2">
+      <option name="Gradle.BeforeRunTask" enabled="false" tasks="prepareTestServer" externalProjectPath="$PROJECT_DIR$" vmOptions="" scriptParameters="" />
+    </method>
+  </configuration>
+</component>
