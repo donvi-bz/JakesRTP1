@@ -1,0 +1,60 @@
+plugins {
+    id 'java'
+    id 'com.github.johnrengelman.shadow' version '6.1.0'
+}
+
+group 'biz.donvi.jakesRTP1'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compileOnly 'org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT'
+    implementation 'io.papermc:paperlib:1.0.6'
+}
+
+processResources {
+    from(sourceSets.main.resources.srcDirs) {
+        expand 'version': project.version
+        include 'plugin.yml'
+    }
+}
+
+shadowJar {
+    relocate 'io.papermc', 'biz.donvi.jakesRTP.libs.io.papermc'
+}
+
+artifacts {
+    archives shadowJar
+}
+
+test {
+    useJUnitPlatform()
+}
+
+task copyToMainOut(type: Copy) {
+    dependsOn(tasks.build)
+    try {
+        delete file("../build-output-final/").listFiles()
+    } catch (Exception ignored) {
+        println "Could not delete old plugin from test server."
+    }
+    try {
+        from file("build/libs/Core-${project.version}-all.jar")
+        into file("../build-output-final")
+        rename 'Core-', 'JakesRTP-v'
+        rename '-all', ''
+    } catch (Exception ignored) {
+        println "sError in copyToMainOut(); Do you have a test server?"
+//        ignored.printStackTrace() // Uncomment for stack trace
+    }
+}
+
+task prepareTestServer(type: Copy) {
+    dependsOn(tasks.copyToMainOut)
+    delete file("../testServer/plugins/JakesRTP.jar")
+    from file("../build-output-final/JakesRTP-v${project.version}.jar")
+    into file("../testServer/plugins/")
+    rename '-.*\\.', '\\.'
+}

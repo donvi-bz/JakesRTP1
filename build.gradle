@@ -1,19 +1,25 @@
-plugins {
-    id 'java'
-}
+defaultTasks 'build'
 
-group 'biz.donvi'
-version '1.0.0'
+subprojects {
+    apply plugin: 'java-library'
 
-repositories {
-    mavenCentral()
-}
+    group = 'biz.donvi'
+    project.version = '1.0.0'
 
-dependencies {
-    testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
-    testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
-}
+    sourceCompatibility = 16
+    targetCompatibility = 16
 
-test {
-    useJUnitPlatform()
+    tasks.withType(JavaCompile) {
+        options.encoding = 'UTF-8'
+
+    }
+
+    repositories {
+        mavenLocal()
+        maven { url 'https://hub.spigotmc.org/nexus/content/repositories/snapshots/' }
+    }
+
+    tasks.withType(Copy).all {
+        duplicatesStrategy 'include'
+    }
 }
