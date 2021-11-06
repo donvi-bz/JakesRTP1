@@ -7,11 +7,20 @@ group 'biz.donvi.jakesRTP1'
 
 repositories {
     mavenCentral()
+    maven { url 'https://papermc.io/repo/repository/maven-public/' }
+    maven { url 'https://repo.codemc.io/repository/maven-public/' }
+    maven { url 'https://jitpack.io' }
+    maven { url 'https://maven.enginehub.org/repo/' }
+    maven { url 'https://repo.mikeprimm.com/'}
 }
 
 dependencies {
+    implementation  project(":API")
     compileOnly 'org.spigotmc:spigot-api:1.17-R0.1-SNAPSHOT'
     implementation 'io.papermc:paperlib:1.0.6'
+    // https://mvnrepository.com/artifact/org.apache.commons/commons-collections4
+    implementation group: 'org.apache.commons', name: 'commons-collections4', version: '4.0'
+
 }
 
 processResources {

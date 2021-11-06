@@ -1,12 +1,25 @@
-package biz.donvi.jakesRTP1.pointGeneration;
+package biz.donvi.jakesRTP1.configuration.distributions;
 
+import biz.donvi.JakesRTP1.util.DebugPrintable;
+import biz.donvi.JakesRTP1.configuration.distributions.Distribution;
 
 import java.util.Random;
 
 import static java.lang.Math.*;
+import static java.lang.Math.PI;
 
-class RandomCords {
+public abstract class AbstractDistribution implements Distribution, DebugPrintable {
 
+    @Override
+    public String getDebugPrintableName() {
+        return "default";
+    }
+
+    /* ================================================== *\
+                    All that static stuff
+    \* ================================================== */
+
+    //<editor-fold desc="That static stuff">
     private static final Random r = new Random();
 
     /**
@@ -184,7 +197,6 @@ class RandomCords {
         return new double[]{x, y};
     }
 
-    //<editor-fold desc="Static matrix stuff">
     static final double[][] ROTATION_0   = {
         {1, 0},
         {0, 1}};
