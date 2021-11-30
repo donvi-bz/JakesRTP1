@@ -1,6 +1,6 @@
-package biz.donvi.JakesRTP1.configuration;
+package biz.donvi.jakesRTP1API.configuration;
 
-import biz.donvi.JakesRTP1.util.CoolDownTracker;
+import biz.donvi.jakesRTP1API.util.CoolDownTracker;
 import org.bukkit.World;
 
 import java.util.List;
@@ -67,15 +67,23 @@ public interface RtpProfile {
 
     DistributionProfile getDistribution();
 
+    boolean isDistributionPrimaryOwner();
+
     void setDistribution(DistributionProfile distribution);
+
+    void setDistribution(DistributionProfile distribution, String primaryOwner);
 
     float getCoolDownTime();
 
     void setCoolDownTime(float timeInSeconds);
 
+    boolean isCoolDownPrimaryOwner();
+
     CoolDownTracker getCoolDown();
 
     void setCoolDown(CoolDownTracker coolDown);
+
+    void setCoolDown(CoolDownTracker coolDown, String primaryOwner);
 
     int getWarmup();
 

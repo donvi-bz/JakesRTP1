@@ -1,9 +1,9 @@
-package biz.donvi.JakesRTP1.configuration;
+package biz.donvi.jakesRTP1API.configuration;
 
-import biz.donvi.JakesRTP1.configuration.distributions.Distribution;
-import biz.donvi.JakesRTP1.configuration.distributions.Rectangle;
-import biz.donvi.JakesRTP1.configuration.distributions.Symmetric;
-import biz.donvi.JakesRTP1.util.CoolDownTracker;
+import biz.donvi.jakesRTP1API.configuration.distributions.Distribution;
+import biz.donvi.jakesRTP1API.configuration.distributions.Rectangle;
+import biz.donvi.jakesRTP1API.configuration.distributions.Symmetric;
+import biz.donvi.jakesRTP1API.util.CoolDownTracker;
 
 /**
  * This class provides static methods to create all JRTP related components to make a valid {@link RtpProfile} from
@@ -78,6 +78,12 @@ public abstract class ConfigurationFactory {
     }
 
     protected abstract DistributionProfile newDistributionProfileW(String shapeName);
+
+    public static DistributionProfile newDistributionProfile(Distribution baseDistribution) {
+        return factory.newDistributionProfileW(baseDistribution);
+    }
+
+    protected abstract DistributionProfile newDistributionProfileW(Distribution baseDistribution);
 
     /**
      * Returns a new {@link Distribution} with default values for the given string. If an invalid string is given,

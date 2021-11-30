@@ -1,6 +1,6 @@
-package biz.donvi.JakesRTP1.configuration;
+package biz.donvi.jakesRTP1API.configuration;
 
-import biz.donvi.JakesRTP1.configuration.distributions.Distribution;
+import biz.donvi.jakesRTP1API.configuration.distributions.Distribution;
 
 public interface DistributionProfile {
 

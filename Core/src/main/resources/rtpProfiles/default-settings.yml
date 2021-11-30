@@ -4,48 +4,107 @@
 #     = = = = = = = = = = = = = = =
 #
 # The name of this config section is 'default-settings', each section must have a unique name
+# Please don't manually change the version, the config loader may get mad if you do.
+$version: '1.0'
 
 # Should we load this config? If false, this config will not be usable anywhere.
+# If this setting is left unset, the config will still get loaded.
 # For finer control, enable or disable command-enabled and require-explicit-permission.
 enabled: true
 
-# Can a player use this config with `/rtp`?
-# Set to false if you plan on having this config exclusively for rtp-on-first-join, rtp-on-death, or through the
-#   `forcertp` command (the `forcertp` command is what you would use for portals).
-command-enabled: true
+# Every time this RtpProfile is visible to a player, either if they list their rtp options, see it in a tab-complete,
+# or use it as an argument in `/rtp [config-name]` or `/force-rtp [config-name]`, the name set here will be the one
+# seen. For configuration options, (like in this file and others) the name of the config file (minus the .yml) will be
+# used instead. For most cases, you can leave the visible name to be the same as the config name. The intent of this
+# setting is to allow situations where say 3 rtpProfiles are named "resource", but players can access different ones
+# based on their rank/permissions.
+# Leave as `~` or `null` for this name to be the same as the name of the file.
+visible-name: ~
 
-# The player will only be able to use this config if they have the permission:
-#   'jakesrtp.use.[name]' where the default config would be 'jakesrtp.use.default-settings'.
-# This setting is most useful when there are overlapping configurations.
-# Note: If used along side `rtp-on-death.require-permission` then the player will need both permissions.
-require-explicit-permission: false
+# Does the player need a permission to use this RtpProfile?
+# This config option can either be a boolean (so either true or false), or the literal permission node you want to use.
+# If you want this RtpProfile to be usable by everyone, set this to `false`. If set to `true`, players will only be able
+# to use this RtpProfile if they have the permission `jakesrtp.use.[config-name]` where `config-name` is the name of
+# this file (excluding the .yml). If set to a string, for example `require-permission: potato`, a player will only be
+# able to use this RtpProfile if they have the permission `jakesrtp.use.[potato]`.
+require-permission: false
 
 # The priority of the config. Higher priority are preferred over lower ones.
-# Only useful if there are overlapping configurations (multiple configs that include the same worlds).
+# Priority only comes into play if multiple RtpProfiles could be used for a situation.
+# Some examples of when this may happen are:
+#  - A player has permission to use multiple RtpProfiles that can be called from their world.
+#  - A player runs `/rtp [visible-name]` with a name that maps to multiple profiles.
+#  - A `/force-rtp` is run on a player (force-rtp skips the call-from-world check) with no RtpProfile name given.
+#    This means every profile that every profile the player has permissions for could potentially be used.
+# Please note that a player's cool-down is NEVER considered when choosing which RtpProfile to use.
 priority: 1
 
 # The world that the user is teleported to.
 landing-world: 'world'
 
 # A list of worlds that this command works in, parsed with regex.
+# Note: the `.*` matches any characters after the word `world`, meaning `world_nether`, etc. will be matched.
+# If you only want the world named `world` to match, remove the `.*`
 call-from-worlds:
   - 'world.*'
 
-# Create/edit a distribution in the `distributions` folder, and put the file name here (without the .yml)
-# There exists a dynamic distribution named `world-border` that automatically makes a distribution to perfectly
-#   fill a world border managed by ChunkyBorder (or any future supported world border plugin), or the default minecraft
-#   world border if no plugin is found.
-distribution: 'default-symmetric'
 
-# Which method should we use to find a safe location? Since this plugin is meant to work 'out-of-the-box' without need
-#   of configuring, the 'auto' option has been included.
-# a - Auto:       Chooses middle-out for the nether and top-down for everything else.
-# b - Top down:   Starts the search at the high bound and moves down until it finds the ground.
-# c - Middle out: Starts the search between high and low and moves up and down to find land.
-# The main difference between a and b? Top-down will never spawn you in a cave whereas Middle-out is intended for
-#   underground teleports. Middle-out was written specifically to be used in the nether, though you can use it wherever.
-# Note: If you choose c, you may want to edit `bounds.high` and make sure it it set to the max height for your world.
-location-checking-profile: a
+# The distribution is what decides where the players will be teleported. There are currently THREE options on how
+# the distribution can be set. In the file, they are named `distribution-v1`, `distribution-v2` and `distribution-v3`.
+#       !! ONLY THE DISTRIBUTION NAMED `distribution` WILL BE LOADED. BY DEFAULT, NONE HAVE THAT NAME !!
+#       !! TO CHOOSE WHICH OF THESE YOU WANT TO USE, YOU MUST CHANGE THE NAME OF AT LEAST ONE OF THEM !!
+# So first off, if you do not listen to the warning up ↑ here ↑ then the default distribution will be loaded. That's
+#   honestly pretty boring, so you should keep on reading... Since dist-v1 is the simplest, that's the one that goes
+#   first, though you will want to read the comments above all the three sections. If you don't like reading that much,
+#   just remember, these are likely going to be the settings you most want to change.
+# Anyway, the way dist-v1 works is to copy its distribution from another RtpProfile file, so any other file in the
+#   folder that this file is located. When you only have one RtpProfile, there are no other distributions to copy from,
+#   so you'll want to NOT use this option. If you do have more profiles, just set the value to be the name of the file
+#   (excluding the .yml at the end) instead of the `~` and then that distribution will be used.
+distribution-v1: ~
+
+# This second option is a template for the symmetric distribution. The shape can be set to either `square` or `circle`,
+#   and the rest of the same settings apply. If the center option is set to `b` (player's current location), then
+#   location caching will NOT be used (`a` and `c` work fine because the location is consistent between players).
+# Notes for `gaussian-distribution`:
+#   Enabling this will make the points no longer evenly distributed, but instead follow a gaussian centered between the
+#   min and max radius (represented by setting center to 0 for min, 1 for max, or anything in between). Shrink makes
+#   the distribution denser, my preference is to keep it near 3 for a center of 0 or 1, and 6 for a center of 0.5
+distribution-v2:
+  shape: square # or 'circle'
+  center:
+    option: a
+    a: 'world spawn'
+    b: 'players current location'
+    c-custom:
+      x: 0
+      z: 0
+  radius:
+    max: 2000
+    min: 1000
+  gaussian-distribution:
+    enabled: false
+    shrink: 4
+    center: 0.25
+
+distribution-v3:
+  shape: rectangle
+  center:
+    option: a
+    a: 'world spawn'
+    b: 'players current location'
+    c-custom:
+      x: 0
+      z: 0
+  size:
+    x-width: 2000
+    z-width: 1600
+  gap:
+    enabled: true
+    x-width: 700
+    z-width: 700
+    x-center: 150
+    z-center: 150
 
 # Cooldown (time in seconds) between uses.
 # Can be bypassed with permission node `jakesrtp.nocooldown` or 'jakesrtp.nocooldown.[rtpSettings]'
@@ -80,6 +139,16 @@ then-execute:
 # If you do have an economy plugin and you want to disable this feature, set cost to 0.
 # Note: Cost can be a floating point value (ex: 6.67)
 cost: 0.0
+
+# Which method should we use to find a safe location? Since this plugin is meant to work 'out-of-the-box' without need
+#   of configuring, the 'auto' option has been included.
+# a - Auto:       Chooses middle-out for the nether and top-down for everything else.
+# b - Top down:   Starts the search at the high bound and moves down until it finds the ground.
+# c - Middle out: Starts the search between high and low and moves up and down to find land.
+# The main difference between a and b? Top-down will never spawn you in a cave whereas Middle-out is intended for
+#   underground teleports. Middle-out was written specifically to be used in the nether, though you can use it wherever.
+# Note: If you choose c, you may want to edit `bounds.high` and make sure it it set to the max height for your world.
+location-checking-profile: a
 
 ############## # Everything past this point in the config probably does not need to get changed
 bounds: # The lowest and highest points a player can be RTP'd to.

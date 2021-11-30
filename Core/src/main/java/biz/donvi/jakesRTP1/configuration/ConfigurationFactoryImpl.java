@@ -1,19 +1,14 @@
 package biz.donvi.jakesRTP1.configuration;
 
-import biz.donvi.JakesRTP1.configuration.ConfigurationFactory;
-import biz.donvi.JakesRTP1.configuration.DistributionProfile;
-import biz.donvi.JakesRTP1.configuration.RtpProfile;
-import biz.donvi.JakesRTP1.configuration.distributions.Distribution;
-import biz.donvi.JakesRTP1.configuration.distributions.Rectangle;
-import biz.donvi.JakesRTP1.configuration.distributions.Symmetric;
-import biz.donvi.JakesRTP1.util.CoolDownTracker;
-import biz.donvi.JakesRTP1.util.JrtpBaseException;
 import biz.donvi.jakesRTP1.configuration.distributions.Circle;
 import biz.donvi.jakesRTP1.configuration.distributions.RectangleImpl;
 import biz.donvi.jakesRTP1.configuration.distributions.Square;
 import biz.donvi.jakesRTP1.util.CoolDownTrackerImpl;
-
-import java.util.function.Function;
+import biz.donvi.jakesRTP1API.configuration.ConfigurationFactory;
+import biz.donvi.jakesRTP1API.configuration.DistributionProfile;
+import biz.donvi.jakesRTP1API.configuration.RtpProfile;
+import biz.donvi.jakesRTP1API.configuration.distributions.Distribution;
+import biz.donvi.jakesRTP1API.util.CoolDownTracker;
 
 public class ConfigurationFactoryImpl extends ConfigurationFactory {
 
@@ -30,6 +25,13 @@ public class ConfigurationFactoryImpl extends ConfigurationFactory {
     public DistributionProfile newDistributionProfileW(String shapeName) {
         DistributionProfile profile = new DistributionProfileImpl();
         if (shapeName != null) profile.setShape(newDistributionW(shapeName));
+        return profile;
+    }
+
+    @Override
+    public DistributionProfile newDistributionProfileW(Distribution baseDistribution) {
+        DistributionProfile profile = new DistributionProfileImpl();
+        profile.setShape(baseDistribution);
         return profile;
     }
 

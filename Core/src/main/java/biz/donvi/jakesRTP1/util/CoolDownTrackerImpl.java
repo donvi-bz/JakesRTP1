@@ -1,6 +1,6 @@
 package biz.donvi.jakesRTP1.util;
 
-import biz.donvi.JakesRTP1.util.CoolDownTracker;
+import biz.donvi.jakesRTP1API.util.CoolDownTracker;
 
 import java.util.HashMap;
 
@@ -16,7 +16,7 @@ public class CoolDownTrackerImpl implements CoolDownTracker {
      * @param coolDownTimeInSeconds The amount of time that must be waited to get True from a check.
      */
     public CoolDownTrackerImpl(float coolDownTimeInSeconds) {
-        coolDownTime = (long) (coolDownTimeInSeconds * 1000);
+        setCoolDownTime(coolDownTimeInSeconds);
     }
 
     /**
@@ -34,6 +34,7 @@ public class CoolDownTrackerImpl implements CoolDownTracker {
      */
     @Override
     public void setCoolDownTime(float coolDownTime) {
+        if (coolDownTime < 0) coolDownTime = 0;
         this.coolDownTime = (long) (coolDownTime * 1000);
     }
 
@@ -127,10 +128,10 @@ public class CoolDownTrackerImpl implements CoolDownTracker {
     }
 
     /**
-     * Returns the amount of time left to wait before calling rtp again, formatted in a reasonable manor.
+     * Returns the amount of time left to wait before calling rtp again, formatted in a reasonable manner.
      *
      * @param playerName The player to check.
-     * @return A string describing the time left until the cooldown is over. Human readable.
+     * @return A string describing the time left until the cool-down is over. Human-readable.
      */
     @Override
     public String timeLeftWords(String playerName) {return GeneralUtil.readableTime(timeLeft(playerName));}

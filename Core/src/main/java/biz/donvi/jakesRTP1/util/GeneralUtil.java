@@ -113,16 +113,17 @@ public final class GeneralUtil {
     }
 
     public static String readableTime(long milliseconds) {
-        int days, hours, minutes, seconds;
-        seconds = (int) (milliseconds / 1000) % 60;
-        minutes = (int) (milliseconds / (1000 * 60)) % 60;
-        hours = (int) (milliseconds / (1000 * 60 * 60)) % 24;
-        days = (int) (milliseconds / (1000 * 60 * 60 * 24));
-        return Messages.READABLE_TIME.format(
-            (days > 0 ? Messages.READABLE_TIME_WORD_DAYS.format(days) : ""),
-            (hours > 0 ? Messages.READABLE_TIME_WORD_HOURS.format(hours) : ""),
-            (minutes > 0 ? Messages.READABLE_TIME_WORD_MINUTES.format(minutes) : ""),
-            (seconds > 0 ? Messages.READABLE_TIME_WORD_SECONDS.format(seconds) : ""));
+//        int days, hours, minutes, seconds;
+//        seconds = (int) (milliseconds / 1000) % 60;
+//        minutes = (int) (milliseconds / (1000 * 60)) % 60;
+//        hours = (int) (milliseconds / (1000 * 60 * 60)) % 24;
+//        days = (int) (milliseconds / (1000 * 60 * 60 * 24));
+//        return Messages.READABLE_TIME.format(
+//            (days > 0 ? Messages.READABLE_TIME_WORD_DAYS.format(days) : ""),
+//            (hours > 0 ? Messages.READABLE_TIME_WORD_HOURS.format(hours) : ""),
+//            (minutes > 0 ? Messages.READABLE_TIME_WORD_MINUTES.format(minutes) : ""),
+//            (seconds > 0 ? Messages.READABLE_TIME_WORD_SECONDS.format(seconds) : ""));
+        return "not implemented sorry please come back later and bother tim.";
     }
 
     public static boolean isDirEmpty(final Path directory) throws IOException {

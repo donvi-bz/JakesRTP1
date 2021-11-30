@@ -1,10 +1,11 @@
 package biz.donvi.jakesRTP1.configuration.distributions;
 
-import biz.donvi.JakesRTP1.configuration.ConfigurationFactory;
-import biz.donvi.JakesRTP1.configuration.distributions.Distribution;
-import biz.donvi.JakesRTP1.configuration.distributions.Rectangle;
-import biz.donvi.JakesRTP1.configuration.distributions.Symmetric;
-import biz.donvi.JakesRTP1.util.JrtpBaseException;
+import biz.donvi.jakesRTP1API.configuration.ConfigurationFactory;
+import biz.donvi.jakesRTP1API.configuration.DistributionProfile;
+import biz.donvi.jakesRTP1API.configuration.distributions.Distribution;
+import biz.donvi.jakesRTP1API.configuration.distributions.Rectangle;
+import biz.donvi.jakesRTP1API.configuration.distributions.Symmetric;
+import biz.donvi.jakesRTP1API.util.JrtpBaseException;
 import org.bukkit.configuration.ConfigurationSection;
 
 public class DistributionLoader {
@@ -13,7 +14,21 @@ public class DistributionLoader {
 
     private DistributionLoader() {}
 
-    public Distribution load(ConfigurationSection settings) throws JrtpBaseException.ConfigurationException {
+    public DistributionProfile loadDistributionProfile(ConfigurationSection settings)
+    throws JrtpBaseException.ConfigurationException {
+        DistributionProfile distP = ConfigurationFactory.newDistributionProfile(loadDistribution(settings));
+
+
+        distP.setCenter(
+            DistributionProfile.CenterTypes.values()[settings.getString("center.option", "a").charAt(0) - 'a']);
+        distP.setCenterX(settings.getInt("center.c-custom.x"));
+        distP.setCenterZ(settings.getInt("center.c-custom.z"));
+
+        return distP;
+    }
+
+    public Distribution loadDistribution(ConfigurationSection settings)
+    throws JrtpBaseException.ConfigurationException {
         String shapeName = settings.getString("shape", "").toLowerCase();
 
         Distribution shape = ConfigurationFactory.newDistribution(shapeName);

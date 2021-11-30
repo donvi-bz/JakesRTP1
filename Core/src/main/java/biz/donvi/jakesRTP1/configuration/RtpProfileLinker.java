@@ -1,10 +1,9 @@
 package biz.donvi.jakesRTP1.configuration;
 
-import biz.donvi.JakesRTP1.configuration.DistributionProfile;
-import biz.donvi.JakesRTP1.configuration.RtpProfile;
-import biz.donvi.JakesRTP1.util.CoolDownTracker;
-import biz.donvi.jakesRTP1.util.GeneralUtil;
 import biz.donvi.jakesRTP1.util.GeneralUtil.Pair;
+import biz.donvi.jakesRTP1API.configuration.DistributionProfile;
+import biz.donvi.jakesRTP1API.configuration.RtpProfile;
+import biz.donvi.jakesRTP1API.util.CoolDownTracker;
 import org.apache.commons.collections4.map.ReferenceMap;
 
 import java.lang.ref.WeakReference;
@@ -35,7 +34,7 @@ public class RtpProfileLinker {
         for (var pair : awaitingDistribution) {
             RtpProfile waitingProfile;
             if (pair.key.equalsIgnoreCase(name) && (waitingProfile = pair.value.get()) != null) {
-                waitingProfile.setDistribution(profile.getDistribution());
+                waitingProfile.setDistribution(profile.getDistribution(), profile.getName());
                 itemsToRemove.add(pair);
             }
         }
@@ -44,7 +43,7 @@ public class RtpProfileLinker {
         for (var pair : awaitingCoolDownTracker) {
             RtpProfile waitingProfile;
             if (pair.key.equalsIgnoreCase(name) && (waitingProfile = pair.value.get()) != null) {
-                waitingProfile.setCoolDown(profile.getCoolDown());
+                waitingProfile.setCoolDown(profile.getCoolDown(), profile.getName());
                 itemsToRemove.add(pair);
             }
         }
@@ -53,13 +52,17 @@ public class RtpProfileLinker {
 
     public void linkDistribution(RtpProfile profile, String distName) {
         DistributionProfile dist = distributionProfileByName.get(distName);
-        if (dist != null) profile.setDistribution(dist);
-        else awaitingDistribution.add(new Pair<>(distName, new WeakReference<RtpProfile>(profile)));
+        if (dist != null) {
+            profile.setDistribution(dist, distName);
+            distributionProfileByName.put(profile.getName(), dist);
+        } else awaitingDistribution.add(new Pair<>(distName, new WeakReference<RtpProfile>(profile)));
     }
 
     public void linkCoolDown(RtpProfile profile, String coolName) {
         CoolDownTracker cool = coolDownTrackerByName.get(coolName);
-        if (cool != null) profile.setCoolDown(cool);
-        else awaitingCoolDownTracker.add(new Pair<>(coolName, new WeakReference<RtpProfile>(profile)));
+        if (cool != null) {
+            profile.setCoolDown(cool, coolName);
+            coolDownTrackerByName.put(profile.getName(), cool);
+        } else awaitingCoolDownTracker.add(new Pair<>(coolName, new WeakReference<RtpProfile>(profile)));
     }
 }

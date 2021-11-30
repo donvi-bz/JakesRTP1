@@ -1,4 +1,4 @@
-package biz.donvi.JakesRTP1.util;
+package biz.donvi.jakesRTP1API.util;
 
 public interface CoolDownTracker {
     /**

@@ -1,6 +1,6 @@
 package biz.donvi.jakesRTP1.configuration.distributions;
 
-import biz.donvi.JakesRTP1.configuration.distributions.Rectangle;
+import biz.donvi.jakesRTP1API.configuration.distributions.Rectangle;
 
 import java.util.ArrayList;
 import java.util.List;

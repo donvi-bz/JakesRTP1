@@ -1,4 +1,4 @@
-package biz.donvi.JakesRTP1.configuration.distributions;
+package biz.donvi.jakesRTP1API.configuration.distributions;
 
 public interface Symmetric {
     int getRadiusMax();

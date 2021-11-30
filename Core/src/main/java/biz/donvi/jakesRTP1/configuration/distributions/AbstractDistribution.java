@@ -1,7 +1,8 @@
 package biz.donvi.jakesRTP1.configuration.distributions;
 
-import biz.donvi.JakesRTP1.util.DebugPrintable;
-import biz.donvi.JakesRTP1.configuration.distributions.Distribution;
+
+import biz.donvi.jakesRTP1API.configuration.distributions.Distribution;
+import biz.donvi.jakesRTP1API.util.DebugPrintable;
 
 import java.util.Random;
 

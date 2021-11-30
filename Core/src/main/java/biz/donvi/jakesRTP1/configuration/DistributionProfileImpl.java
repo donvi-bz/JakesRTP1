@@ -1,9 +1,9 @@
 package biz.donvi.jakesRTP1.configuration;
 
-import biz.donvi.JakesRTP1.util.DebugPrintable;
-import biz.donvi.JakesRTP1.util.MultiDebugPrintProvider;
-import biz.donvi.JakesRTP1.configuration.DistributionProfile;
-import biz.donvi.JakesRTP1.configuration.distributions.Distribution;
+import biz.donvi.jakesRTP1API.configuration.DistributionProfile;
+import biz.donvi.jakesRTP1API.configuration.distributions.Distribution;
+import biz.donvi.jakesRTP1API.util.DebugPrintable;
+import biz.donvi.jakesRTP1API.util.MultiDebugPrintProvider;
 import org.apache.commons.lang.NotImplementedException;
 
 import java.util.Collections;

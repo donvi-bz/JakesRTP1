@@ -1,34 +1,33 @@
 package biz.donvi.jakesRTP1.configuration;
 
-import biz.donvi.JakesRTP1.util.DebugPrintable;
-import biz.donvi.JakesRTP1.util.MultiDebugPrintProvider;
-import biz.donvi.JakesRTP1.configuration.ConfigurationFactory;
-import biz.donvi.JakesRTP1.configuration.DistributionProfile;
-import biz.donvi.JakesRTP1.configuration.RtpProfile;
-import biz.donvi.JakesRTP1.util.CoolDownTracker;
-import org.apache.commons.lang.NotImplementedException;
+import biz.donvi.jakesRTP1API.configuration.ConfigurationFactory;
+import biz.donvi.jakesRTP1API.configuration.DistributionProfile;
+import biz.donvi.jakesRTP1API.configuration.RtpProfile;
+import biz.donvi.jakesRTP1API.util.CoolDownTracker;
+import biz.donvi.jakesRTP1API.util.DebugPrintable;
+import biz.donvi.jakesRTP1API.util.JrtpBaseException;
+import biz.donvi.jakesRTP1API.util.MultiDebugPrintProvider;
 import org.bukkit.World;
 
 import java.util.Collections;
 import java.util.List;
 
-import static biz.donvi.jakesRTP1.util.MessageStyles.*;
-import static biz.donvi.jakesRTP1.util.MessageStyles.DebugDisplayLines.*;
-
-@SuppressWarnings("unused")
 public class RtpProfileImpl implements RtpProfile, MultiDebugPrintProvider, DebugPrintable {
 
     final static String EXPLICIT_PERM_PREFIX = "jakesrtp.use.";
 
     // Actual properties of the RtpSettings
     protected final String name;
+    final           int[]  configVersion;
 
     protected boolean             commandEnabled            = true;
     protected boolean             requireExplicitPermission = false;
     protected float               priority                  = 1;
     protected World               landingWorld              = null;
     protected List<World>         callFromWorlds            = Collections.emptyList();
+    protected String              distribution_from         = null;
     protected DistributionProfile distribution              = null;
+    protected String              coolDown_from             = null;
     protected CoolDownTracker     coolDown                  = null;
     protected int                 warmup                    = 0;
     protected boolean             warmupCancelOnMove        = true;
@@ -45,7 +44,13 @@ public class RtpProfileImpl implements RtpProfile, MultiDebugPrintProvider, Debu
     protected double              cost                      = 0;
 
     public RtpProfileImpl(String name) {
+        this(name, new int[]{-1});
+    }
+
+    RtpProfileImpl(String name, int[] configVersion) {
         this.name = name;
+        this.configVersion = configVersion;
+        this.distribution = ConfigurationFactory.newDistributionProfile("square");
     }
 
     //<editor-fold desc="Property Getters & Setters">
@@ -67,10 +72,6 @@ public class RtpProfileImpl implements RtpProfile, MultiDebugPrintProvider, Debu
     @Override
     public void setCommandEnabled(boolean commandEnabled) {
         this.commandEnabled = commandEnabled;
-    }
-
-    public String infoStringCommandEnabled(boolean mcFormat) {
-        return LVL_01_SET.format(mcFormat, "Command", enabledOrDisabled(commandEnabled));
     }
 
     //// Property:  requireExplicitPermission
@@ -133,7 +134,19 @@ public class RtpProfileImpl implements RtpProfile, MultiDebugPrintProvider, Debu
     }
 
     @Override
+    public boolean isDistributionPrimaryOwner() {
+        return distribution != null && distribution_from != null && distribution_from.equals(name);
+    }
+
+    @Override
     public void setDistribution(DistributionProfile distribution) {
+        setDistribution(distribution, name);
+    }
+
+    @Override
+    public void setDistribution(DistributionProfile distribution, String primaryOwner) {
+        if (primaryOwner == null) primaryOwner = name;
+        this.distribution_from = primaryOwner;
         this.distribution = distribution;
     }
 
@@ -141,13 +154,19 @@ public class RtpProfileImpl implements RtpProfile, MultiDebugPrintProvider, Debu
 
     @Override
     public float getCoolDownTime() {
-        return coolDown.getCoolDownTime();
+        if (coolDown == null) return -1;
+        else return coolDown.getCoolDownTime();
     }
 
     @Override
     public void setCoolDownTime(float timeInSeconds) {
-        if (this.coolDown == null) this.coolDown = ConfigurationFactory.newCoolDownTracker(timeInSeconds);
+        if (this.coolDown == null) setCoolDown(ConfigurationFactory.newCoolDownTracker(timeInSeconds));
         else coolDown.setCoolDownTime(timeInSeconds);
+    }
+
+    @Override
+    public boolean isCoolDownPrimaryOwner() {
+        return coolDown != null && coolDown_from != null && coolDown_from.equals(name);
     }
 
     @Override
@@ -157,6 +176,13 @@ public class RtpProfileImpl implements RtpProfile, MultiDebugPrintProvider, Debu
 
     @Override
     public void setCoolDown(CoolDownTracker coolDown) {
+        setCoolDown(coolDown, name);
+    }
+
+    @Override
+    public void setCoolDown(CoolDownTracker coolDown, String primaryOwner) {
+        if (primaryOwner == null) primaryOwner = name;
+        this.coolDown_from = primaryOwner;
         this.coolDown = coolDown;
     }
 
@@ -306,7 +332,8 @@ public class RtpProfileImpl implements RtpProfile, MultiDebugPrintProvider, Debu
 
     @Override
     public void setCost(double cost) {
-        this.cost = plugin.canUseEconomy() ? cost : 0;
+        this.cost = cost;
+//        this.cost = plugin.canUseEconomy() ? cost : 0; // TODO BRING THIS BACK
     }
     //</editor-fold>
 
@@ -353,7 +380,7 @@ public class RtpProfileImpl implements RtpProfile, MultiDebugPrintProvider, Debu
 
     @Override
     public List<String> infoStrings() {
-        throw new NotImplementedException();
+        throw new Error("not done yet");
     }
     //</editor-fold>
 

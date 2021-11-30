@@ -1,7 +1,6 @@
 package biz.donvi.jakesRTP1.configuration.distributions;
 
-import biz.donvi.JakesRTP1.configuration.distributions.Symmetric;
-import org.bukkit.configuration.ConfigurationSection;
+import biz.donvi.jakesRTP1API.configuration.distributions.Symmetric;
 
 import java.util.ArrayList;
 import java.util.List;
