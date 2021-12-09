@@ -1,0 +1,11 @@
+#
+#     = = = = = = = = = = = = = = =
+#     →    Link Old RtpProfile    ←
+#     = = = = = = = = = = = = = = =
+#
+$version: '1.0'
+
+enabled: true
+landing-world: 'world' # Is required to function
+distribution: 'all-changed'
+cooldown: 'all-changed'

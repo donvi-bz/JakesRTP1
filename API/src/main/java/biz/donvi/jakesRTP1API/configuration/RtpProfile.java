@@ -13,6 +13,10 @@ public interface RtpProfile {
      */
     String getName();
 
+    String getVisibleName();
+
+    void setVisibleName(String visibleName);
+
 
     boolean isCommandEnabled();
 
@@ -35,6 +39,8 @@ public interface RtpProfile {
      * @param requireExplicitPermission The new value for `require-explicit-permission`
      */
     void setRequireExplicitPermission(boolean requireExplicitPermission);
+
+    void setRequireExplicitPermName(String requireExplicitPermName);
 
     /**
      * Returns the permission node that would be required if {@link #isRequireExplicitPermission()} returns true.

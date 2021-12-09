@@ -7,6 +7,7 @@ import biz.donvi.jakesRTP1API.util.JrtpBaseException;
 import org.bukkit.Bukkit;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -24,7 +25,7 @@ public class RtpProfileLoader {
 
 
     public RtpProfile load(
-        String name, ConfigurationSection config, RtpProfile defaults, RtpProfileLinker linker, Consumer<String> logger
+        String name, FileConfiguration config, RtpProfile defaults, RtpProfileLinker linker, Consumer<String> logger
     )
     throws JrtpBaseException.ConfigurationException {
         if (defaults == null) defaults = defaultRtpProfile;
@@ -37,14 +38,27 @@ public class RtpProfileLoader {
                                           .mapToInt(Integer::parseInt).toArray();
 
         final RtpProfileImpl profile = new RtpProfileImpl(name, configVersion);
+        profile.verbatimConfig = config;
 
         // Command Enabled
         profile.setCommandEnabled(config.getBoolean("command-enabled", defaults.isCommandEnabled()));
         logger.accept(nameInLog + "Command: " + (profile.isCommandEnabled() ? "Enabled" : "Disabled"));
 
+        // Visible Name
+        profile.setVisibleName(config.getString("visible-name", null));
+        logger.accept(nameInLog + "Visible name: '" + profile.getVisibleName() + "'");
+
         // Require Explicit Permission
-        profile.setRequireExplicitPermission(config.getBoolean(
-            "require-explicit-permission", defaults.isRequireExplicitPermission()));
+        if (config.contains("require-explicit-permission", true))
+            profile.setRequireExplicitPermission(config.getBoolean(
+                "require-explicit-permission", defaults.isRequireExplicitPermission()));
+        else {// ↑ Code for v0 config ↑ | ↓ Code for v1 config ↓ | Both included for maximum error protection
+            Boolean rsp = config.getObject("require-permission", Boolean.class);
+            String rName = config.getString("require-permission");
+            profile.setRequireExplicitPermission(rsp == null || rsp);
+            if (rsp == null) profile.setRequireExplicitPermName(rName);
+        }
+
         logger.accept(nameInLog + "Require explicit permission node: " + (
             profile.isRequireExplicitPermission()
                 ? "True (" + RtpProfileImpl.EXPLICIT_PERM_PREFIX + name + ")"
@@ -91,16 +105,18 @@ public class RtpProfileLoader {
             profile.setDistribution(defaults.getDistribution());
             distLoadFashion = "provided defaults";
         }
+        // If we have a config section, we pass the loading on to the next section.
+        else if (distAsConfig != null) {
+            profile.setDistribution(DistributionLoader.INSTANCE.loadDistributionProfile(distAsConfig));
+            distLoadFashion = "config section";
+        }
         // If we have a name, then we link and move on
         else if (distAsName != null) {
             linker.linkDistribution(profile, distAsName);
             distLoadFashion = "linking by name (" + distAsName + ")";
         }
-        // If we have a config section, we pass the loading on to the next section.
-        else if (distAsConfig != null) {
-            profile.setDistribution(DistributionLoader.INSTANCE.loadDistributionProfile(distAsConfig));
-            distLoadFashion = "config section";
-        } else throw new JrtpBaseException.ConfigurationException("Distribution isn't null but also isn't useful");
+        else throw new JrtpBaseException.ConfigurationException("Distribution isn't null but also isn't useful");
+
 
         logger.accept(nameInLog + "Loaded distribution via " + distLoadFashion); // double log?!
 
@@ -116,10 +132,6 @@ public class RtpProfileLoader {
             else profile.setCoolDown(defaults.getCoolDown());
             // Otherwise, we were given a valid time and can use that.
         else profile.setCoolDownTime((float) coolDownAsNum);
-        // Teensy bit of stupid-ness, if loading from version 0, we must make sure our cool-down is owned. To do this,
-        // we just re-assign it. The coolDown MUST be linked by this point though!!!
-        if (configVersion.length >= 1 && configVersion[0] == 0)
-            profile.setCoolDown(profile.getCoolDown());
 
         if (coolDownIsBorrowed) logger.accept(nameInLog + "Cool-down is shared with settings `" +
                                               (coolDownLit != null ? coolDownLit : defaults.getName()) + "`.");
@@ -183,6 +195,13 @@ public class RtpProfileLoader {
                                      ? defaults.getCommandsToRun()
                                      : config.getStringList("then-execute").toArray(String[]::new));
 
+
+        // Teensy bit of stupid-ness, if loading from version 0, we must make sure our cool-down is owned. To do this,
+        // we just re-assign it. The coolDown MUST be linked by this point though!!!
+        if (configVersion.length >= 1 && configVersion[0] == 0) {
+            profile.setDistribution(profile.getDistribution());
+            profile.setCoolDown(profile.getCoolDown());
+        }
         // Very important that we register the profile!!!
         linker.registerProfile(profile);
         logger.accept(nameInLog + "Registering profile. (Loading complete)");

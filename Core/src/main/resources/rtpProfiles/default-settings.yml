@@ -21,12 +21,17 @@ enabled: true
 # Leave as `~` or `null` for this name to be the same as the name of the file.
 visible-name: ~
 
+# Can a player rtp with this profile through the `/rtp` command?
+command-enabled: true
+
 # Does the player need a permission to use this RtpProfile?
 # This config option can either be a boolean (so either true or false), or the literal permission node you want to use.
 # If you want this RtpProfile to be usable by everyone, set this to `false`. If set to `true`, players will only be able
-# to use this RtpProfile if they have the permission `jakesrtp.use.[config-name]` where `config-name` is the name of
-# this file (excluding the .yml). If set to a string, for example `require-permission: potato`, a player will only be
-# able to use this RtpProfile if they have the permission `jakesrtp.use.[potato]`.
+#   to use this RtpProfile if they have the permission `jakesrtp.use.[config-name]` where `config-name` is the name of
+#   this file (excluding the .yml). If set to a string, for example `require-permission: potato`, a player will only be
+#   able to use this RtpProfile if they have the permission `jakesrtp.use.potato`.
+# The permission will ALWAYS even when `/force-rtp` is used! If you plan on only having this profile only usable through
+#   the `/force-rtp` command (like for use with command blocks and portals) you should set `command-enabled` to false!
 require-permission: false
 
 # The priority of the config. Higher priority are preferred over lower ones.
@@ -149,6 +154,21 @@ cost: 0.0
 #   underground teleports. Middle-out was written specifically to be used in the nether, though you can use it wherever.
 # Note: If you choose c, you may want to edit `bounds.high` and make sure it it set to the max height for your world.
 location-checking-profile: a
+
+block-lists:
+  safe-to-be-in:
+    - 'AIR'
+  unsafe-to-be-on:
+    - 'LAVA'
+  tree-leaves:
+    - 'ACACIA_LEAVES'
+    - 'BIRCH_LEAVES'
+    - 'DARK_OAK_LEAVES'
+    - 'JUNGLE_LEAVES'
+    - 'OAK_LEAVES'
+    - 'SPRUCE_LEAVES'
+    - 'AZALEA_LEAVES'
+    - 'FLOWERING_AZALEA_LEAVES'
 
 ############## # Everything past this point in the config probably does not need to get changed
 bounds: # The lowest and highest points a player can be RTP'd to.

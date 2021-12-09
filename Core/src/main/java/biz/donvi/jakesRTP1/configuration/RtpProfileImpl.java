@@ -5,9 +5,9 @@ import biz.donvi.jakesRTP1API.configuration.DistributionProfile;
 import biz.donvi.jakesRTP1API.configuration.RtpProfile;
 import biz.donvi.jakesRTP1API.util.CoolDownTracker;
 import biz.donvi.jakesRTP1API.util.DebugPrintable;
-import biz.donvi.jakesRTP1API.util.JrtpBaseException;
 import biz.donvi.jakesRTP1API.util.MultiDebugPrintProvider;
 import org.bukkit.World;
+import org.bukkit.configuration.file.FileConfiguration;
 
 import java.util.Collections;
 import java.util.List;
@@ -18,10 +18,11 @@ public class RtpProfileImpl implements RtpProfile, MultiDebugPrintProvider, Debu
 
     // Actual properties of the RtpSettings
     protected final String name;
-    final           int[]  configVersion;
 
+    protected String              visibleName;
     protected boolean             commandEnabled            = true;
     protected boolean             requireExplicitPermission = false;
+    protected String              requireExplicitPermName   = null;
     protected float               priority                  = 1;
     protected World               landingWorld              = null;
     protected List<World>         callFromWorlds            = Collections.emptyList();
@@ -43,12 +44,18 @@ public class RtpProfileImpl implements RtpProfile, MultiDebugPrintProvider, Debu
     protected String[]            commandsToRun             = new String[0];
     protected double              cost                      = 0;
 
+    // For internal use
+    final int[] configVersion;
+    FileConfiguration verbatimConfig;
+
+    // Now on to the constructors
+
     public RtpProfileImpl(String name) {
         this(name, new int[]{-1});
     }
 
     RtpProfileImpl(String name, int[] configVersion) {
-        this.name = name;
+        this.name = this.visibleName = name;
         this.configVersion = configVersion;
         this.distribution = ConfigurationFactory.newDistributionProfile("square");
     }
@@ -60,6 +67,18 @@ public class RtpProfileImpl implements RtpProfile, MultiDebugPrintProvider, Debu
     @Override
     public String getName() {
         return name;
+    }
+
+    @Override
+    public String getVisibleName() {
+        return visibleName;
+    }
+
+    @Override
+    public void setVisibleName(String visibleName) {
+        if (visibleName == null || visibleName.equals(""))
+            this.visibleName = this.name;
+        else this.visibleName = visibleName;
     }
 
     //// Property:  commandEnabled
@@ -87,8 +106,15 @@ public class RtpProfileImpl implements RtpProfile, MultiDebugPrintProvider, Debu
     }
 
     @Override
+    public void setRequireExplicitPermName(String requireExplicitPermName) {
+        this.requireExplicitPermName = requireExplicitPermName;
+    }
+
+    @Override
     public String requiredExplicitPermission() {
-        return EXPLICIT_PERM_PREFIX + name;
+        return EXPLICIT_PERM_PREFIX + (requireExplicitPermName != null
+            ? requireExplicitPermName
+            : name);
     }
     //// Property:  priority
 

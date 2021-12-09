@@ -25,7 +25,7 @@ public class CoolDownTrackerImpl implements CoolDownTracker {
      */
     @Override
     public float getCoolDownTime() {
-        return (float) coolDownTime * 1000 ;
+        return (float) coolDownTime / 1000 ;
     }
 
     /**

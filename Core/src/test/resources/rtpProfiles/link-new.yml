@@ -1,0 +1,12 @@
+#
+#     = = = = = = = = = = = = = = =
+#     →    Link New RtpProfile    ←
+#     = = = = = = = = = = = = = = =
+#
+$version: '1.0'
+
+enabled: true
+require-permission: 'special-perm'
+landing-world: 'world' # Is required to function
+distribution: 'mr-boring'
+cooldown: 'mr-boring'

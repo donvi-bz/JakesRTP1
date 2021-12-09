@@ -9,6 +9,7 @@ import org.apache.commons.collections4.map.ReferenceMap;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Map;
+import java.util.Objects;
 
 import static org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength.HARD;
 import static org.apache.commons.collections4.map.AbstractReferenceMap.ReferenceStrength.WEAK;
@@ -26,24 +27,34 @@ public class RtpProfileLinker {
         String name = profile.getName();
         // Add this profile to the maps so other profiles can use it
         rtpProfileByName.put(name, profile);
-        distributionProfileByName.put(name, profile.getDistribution());
-        coolDownTrackerByName.put(name, profile.getCoolDown());
-        // See if this profile is a match for any of the profiles on a wait list. Got to do this for both lists.
-        @SuppressWarnings("rawtypes") // Meh. It's easier this way.
+        if (profile.getDistribution() != null) forceRegisterDistribution(name, profile.getDistribution());
+        if (profile.getCoolDown() != null) forceRegisterCoolDown(name, profile.getCoolDown());
+    }
+
+    void forceRegisterDistribution(String distName, DistributionProfile dist) {
+        Objects.requireNonNull(dist);
+        distributionProfileByName.put(distName, dist);
+        @SuppressWarnings("rawtypes")
         ArrayList<Pair> itemsToRemove = new ArrayList<>();
         for (var pair : awaitingDistribution) {
             RtpProfile waitingProfile;
-            if (pair.key.equalsIgnoreCase(name) && (waitingProfile = pair.value.get()) != null) {
-                waitingProfile.setDistribution(profile.getDistribution(), profile.getName());
+            if (pair.key.equalsIgnoreCase(distName) && (waitingProfile = pair.value.get()) != null) {
+                waitingProfile.setDistribution(dist, distName);
                 itemsToRemove.add(pair);
             }
         }
         awaitingDistribution.removeAll(itemsToRemove);
-        itemsToRemove.clear();
+    }
+
+    void forceRegisterCoolDown(String coolName, CoolDownTracker coolDown) {
+        Objects.requireNonNull(coolDown);
+        coolDownTrackerByName.put(coolName, coolDown);
+        @SuppressWarnings("rawtypes")
+        ArrayList<Pair> itemsToRemove = new ArrayList<>();
         for (var pair : awaitingCoolDownTracker) {
             RtpProfile waitingProfile;
-            if (pair.key.equalsIgnoreCase(name) && (waitingProfile = pair.value.get()) != null) {
-                waitingProfile.setCoolDown(profile.getCoolDown(), profile.getName());
+            if (pair.key.equalsIgnoreCase(coolName) && (waitingProfile = pair.value.get()) != null) {
+                waitingProfile.setCoolDown(coolDown, coolName);
                 itemsToRemove.add(pair);
             }
         }
