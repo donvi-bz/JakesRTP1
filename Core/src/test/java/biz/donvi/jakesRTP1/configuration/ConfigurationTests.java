@@ -1,10 +1,13 @@
 package biz.donvi.jakesRTP1.configuration;
 
+import biz.donvi.jakesRTP1API.configuration.BlockList;
 import biz.donvi.jakesRTP1API.configuration.RtpProfile;
 import biz.donvi.jakesRTP1API.util.JrtpBaseException;
 import biz.donvi.jakesRTP1_mock.MockServer;
 import org.bukkit.Bukkit;
+import org.bukkit.Material;
 import org.bukkit.World;
+import org.bukkit.block.Biome;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
@@ -41,6 +44,13 @@ public class ConfigurationTests {
     }
 
     static RtpProfile rtpProfile_default;
+
+    @Test
+    @Order(0)
+    @DisplayName("Load Internal Default")
+    public void loadInternalDefaultCheck() {
+        assertEquals("__INTERNAL_DEFAULT_SETTINGS__", RtpProfileLoader.defaultRtpProfile.getName());
+    }
 
     //<editor-fold desc="Default RtpProfile | Test Cases">
     @Test
@@ -163,6 +173,30 @@ public class ConfigurationTests {
     @DisplayName("Check | default-settings | loc-check-prof")
     void checkDefaultRtpProfile_LocCheckProfile() {
         assertEquals(RtpProfile.LocCheckProfiles.AUTO, rtpProfile_default.getCheckProfile());
+    }
+
+    @Test
+    @Order(114)
+    @DisplayName("check | default-settings | block-list")
+    void checkDefaultRtpProfile_BlockList() {
+        assertNotNull(rtpProfile_default.getBlockList());
+        BlockList bl = rtpProfile_default.getBlockList();
+        assertNotSame(BlockListImpl.DEFAULTS, bl);
+        assertTrue(rtpProfile_default.isBlockListPrimaryOwner());
+        // Make sure this all exists...
+        assertNotNull(bl.getSafeToBeIn());
+        assertNotNull(bl.getUnsafeToBeOn());
+        assertNotNull(bl.getTreeLeaves());
+        assertNotNull(bl.getUnsafeBiomes());
+        // Some better checks
+        assertTrue(bl.getSafeToBeIn().size() > 5);
+        assertTrue(bl.getSafeToBeIn().contains(Material.AIR));
+        assertTrue(bl.getUnsafeToBeOn().size() > 5);
+        assertTrue(bl.getUnsafeToBeOn().contains(Material.LAVA));
+        assertTrue(bl.getTreeLeaves().size() > 5);
+        assertTrue(bl.getTreeLeaves().contains(Material.OAK_LEAVES));
+        assertEquals(0, bl.getUnsafeBiomes().size());
+
     }
     //</editor-fold>
 
@@ -292,6 +326,29 @@ public class ConfigurationTests {
     void checkAllChangedProfile_LocCheckProfile() {
         assertEquals(RtpProfile.LocCheckProfiles.TOP_DOWN, rtpProfile_allChanged.getCheckProfile());
     }
+
+    @Test
+    @Order(214)
+    @DisplayName("check | all-changed | block-list")
+    void checkAllChangedProfile_BlockList() {
+        assertNotNull(rtpProfile_allChanged.getBlockList());
+        BlockList bl = rtpProfile_allChanged.getBlockList();
+        assertTrue(rtpProfile_allChanged.isBlockListPrimaryOwner());
+        // Make sure this all exists...
+        assertNotNull(bl.getSafeToBeIn());
+        assertNotNull(bl.getUnsafeToBeOn());
+        assertNotNull(bl.getTreeLeaves());
+        // Some better checks
+        assertEquals(1, bl.getSafeToBeIn().size());
+        assertTrue(bl.getSafeToBeIn().contains(Material.SNOW));
+        assertEquals(1, bl.getUnsafeToBeOn().size());
+        assertTrue(bl.getUnsafeToBeOn().contains(Material.MAGMA_BLOCK));
+        assertEquals(1, bl.getTreeLeaves().size());
+        assertTrue(bl.getTreeLeaves().contains(Material.ACACIA_LEAVES));
+        assertEquals(1, bl.getUnsafeBiomes().size());
+        assertTrue(bl.getUnsafeBiomes().contains(Biome.OCEAN));
+
+    }
     //</editor-fold>
 
     static RtpProfile rtpProfile_linkNew;
@@ -351,14 +408,28 @@ public class ConfigurationTests {
     @Order(508)
     @DisplayName("Check | link-new | distribution (from mrBoring)")
     void checkLinkNewProfile_Distribution() {
+        // Make sure they have the same distribution
         assertSame(rtpProfile_linkNew.getDistribution(), rtpProfile_mrBoring.getDistribution());
+        // But also make sure we don't own the distribution
+        assertFalse(rtpProfile_linkNew.isDistributionPrimaryOwner());
     }
 
     @Test
     @Order(509)
     @DisplayName("Check | link-new | cool-down (from mrBoring)")
     void checkLinkNewProfile_CoolDown() {
+        // Make sure they have the same cooldown
         assertSame(rtpProfile_linkNew.getCoolDown(), rtpProfile_mrBoring.getCoolDown());
+        // But also make sure we don't own the cooldown
+        assertFalse(rtpProfile_linkNew.isCoolDownPrimaryOwner());
+    }
+
+    @Test
+    @Order(514)
+    @DisplayName("check | link-new | block-list (from mrBoring)")
+    void checkLinkNewProfile_BlockList() {
+        assertSame(rtpProfile_mrBoring.getBlockList(), rtpProfile_linkNew.getBlockList());
+        assertFalse(rtpProfile_linkNew.isBlockListPrimaryOwner());
     }
     //</editor-fold>
 
@@ -389,14 +460,29 @@ public class ConfigurationTests {
     @Order(608)
     @DisplayName("Check | link-old | distribution (from allChanged)")
     void checkLinkOldProfile_Distribution() {
-        assertSame(rtpProfile_linkOld.getDistribution(), rtpProfile_allChanged.getDistribution());
+        // Make sure they have the same distribution
+        assertSame(rtpProfile_allChanged.getDistribution(), rtpProfile_linkOld.getDistribution());
+        // But also make sure we don't own the distribution
+        assertFalse(rtpProfile_linkOld.isDistributionPrimaryOwner());
     }
 
     @Test
     @Order(609)
     @DisplayName("Check | link-old | cool-down (from allChanged)")
     void checkLinkOldProfile_CoolDown() {
-        assertSame(rtpProfile_linkOld.getCoolDown(), rtpProfile_allChanged.getCoolDown());
+        // Make sure they have the same cooldown
+        assertSame(rtpProfile_allChanged.getCoolDown(), rtpProfile_linkOld.getCoolDown());
+        // But also make sure we don't own the cooldown
+        assertFalse(rtpProfile_linkOld.isCoolDownPrimaryOwner());
+    }
+
+
+    @Test
+    @Order(614)
+    @DisplayName("check | link-old | block-list (from allChanged)")
+    void checkLinkOldProfile_BlockList() {
+        assertSame(rtpProfile_allChanged.getBlockList(), rtpProfile_linkOld.getBlockList());
+        assertFalse(rtpProfile_linkOld.isBlockListPrimaryOwner());
     }
     //</editor-fold>
     

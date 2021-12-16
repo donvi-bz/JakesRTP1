@@ -56,8 +56,10 @@ call-from-worlds:
 
 # The distribution is what decides where the players will be teleported. There are currently THREE options on how
 # the distribution can be set. In the file, they are named `distribution-v1`, `distribution-v2` and `distribution-v3`.
-#       !! ONLY THE DISTRIBUTION NAMED `distribution` WILL BE LOADED. BY DEFAULT, NONE HAVE THAT NAME !!
-#       !! TO CHOOSE WHICH OF THESE YOU WANT TO USE, YOU MUST CHANGE THE NAME OF AT LEAST ONE OF THEM !!
+#     ┌──────────────────────────────────────────────────────────────────────────────────────────────────┐
+#     │ !! ONLY THE DISTRIBUTION NAMED `distribution` WILL BE LOADED. BY DEFAULT, NONE HAVE THAT NAME !! │
+#     │ !! TO CHOOSE WHICH OF THESE YOU WANT TO USE, YOU MUST CHANGE THE NAME OF AT LEAST ONE OF THEM !! │
+#     └──────────────────────────────────────────────────────────────────────────────────────────────────┘
 # So first off, if you do not listen to the warning up ↑ here ↑ then the default distribution will be loaded. That's
 #   honestly pretty boring, so you should keep on reading... Since dist-v1 is the simplest, that's the one that goes
 #   first, though you will want to read the comments above all the three sections. If you don't like reading that much,
@@ -152,14 +154,52 @@ cost: 0.0
 # c - Middle out: Starts the search between high and low and moves up and down to find land.
 # The main difference between a and b? Top-down will never spawn you in a cave whereas Middle-out is intended for
 #   underground teleports. Middle-out was written specifically to be used in the nether, though you can use it wherever.
-# Note: If you choose c, you may want to edit `bounds.high` and make sure it it set to the max height for your world.
+# Note: If you choose c, you may want to edit `bounds.high` and make sure it set to the max height for your world.
 location-checking-profile: a
 
+# Some black/white lists of materials that help determine where a player can or can not get teleported to. This section
+#   can either have three sub-lists (like it does in the default file), the name of another RTP Profile to copy the
+#   lists from (much like how the `distribution` and `cooldown` sections work), or have `null` or `~` as its value,
+#   which will lead to the plugin defaults getting used.
+# There are three separate lists defined, and each is used a different way.
+#   SAFE-TO-BE-IN   - These are blocks that a player can get teleported INTO.
+#                     This is where you put materials like AIR and other materials that you can safely stand in.
+#   UNSAFE-TO-BE-ON - These are blocks you NEVER want UNDER a player when they are teleported.
+#                     It may be smart to have things like AIR and LAVA in here.
+#   TREE-LEAVES     - With `Top Down` searching, players will ONLY be placed in positions where every block from their
+#                     feet up is either safe to be in, or tree leaves. This allows people to spawn under trees, but not
+#                     inside caves. You can add non-leaves to this to allow people to land under other block types...
+#   UNSAFE-BIOMES   - A player will NEVER land in any of the given biomes.
 block-lists:
   safe-to-be-in:
     - 'AIR'
+    - 'SNOW'
+    - 'FERN'
+    - 'LARGE_FERN'
+    - 'VINE'
+    - 'GRASS'
+    - 'TALL_GRASS'
+    - 'GLOW_LICHEN'
+    - 'MOSS_CARPET'
+    - 'GLOW_BERRIES'
   unsafe-to-be-on:
     - 'LAVA'
+    - 'MAGMA_BLOCK'
+    - 'WATER'
+    - 'AIR'
+    - 'CAVE_AIR'
+    - 'VOID_AIR'
+    - 'CACTUS'
+    - 'SEAGRASS'
+    - 'KELP'
+    - 'TALL_SEAGRASS'
+    - 'LILY_PAD'
+    - 'BAMBOO'
+    - 'BAMBOO_SAPLING'
+    - 'SMALL_DRIPLEAF'
+    - 'BIG_DRIPLEAF'
+    - 'BIG_DRIPLEAF_STEM'
+    - 'POINTED_DRIPSTONE'
   tree-leaves:
     - 'ACACIA_LEAVES'
     - 'BIRCH_LEAVES'
@@ -169,6 +209,8 @@ block-lists:
     - 'SPRUCE_LEAVES'
     - 'AZALEA_LEAVES'
     - 'FLOWERING_AZALEA_LEAVES'
+  unsafe-biomes:
+    - ''
 
 ############## # Everything past this point in the config probably does not need to get changed
 bounds: # The lowest and highest points a player can be RTP'd to.

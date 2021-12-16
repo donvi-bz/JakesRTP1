@@ -9,3 +9,4 @@ enabled: true
 landing-world: 'world' # Is required to function
 distribution: 'all-changed'
 cooldown: 'all-changed'
+block-lists: 'all-changed'

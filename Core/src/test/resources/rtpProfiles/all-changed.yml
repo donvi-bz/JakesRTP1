@@ -47,6 +47,16 @@ cost: 1.1
 
 location-checking-profile: b
 
+block-lists:
+  safe-to-be-in:
+    - 'SNOW'
+  unsafe-to-be-on:
+    - 'MAGMA_BLOCK'
+  tree-leaves:
+    - 'ACACIA_LEAVES'
+  unsafe-biomes:
+    - 'OCEAN'
+
 ############## # Everything past this point in the config probably does not need to get changed
 bounds: # The lowest and highest points a player can be RTP'd to.
   low: 32     # Default: 32

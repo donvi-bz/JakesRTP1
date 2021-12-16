@@ -1,8 +1,10 @@
 package biz.donvi.jakesRTP1API.configuration;
 
 import biz.donvi.jakesRTP1API.util.CoolDownTracker;
+import org.bukkit.Material;
 import org.bukkit.World;
 
+import java.util.EnumSet;
 import java.util.List;
 
 public interface RtpProfile {
@@ -102,6 +104,14 @@ public interface RtpProfile {
     boolean isWarmupCountDown();
 
     void setWarmupCountDown(boolean warmupCountDown);
+
+    BlockList getBlockList();
+
+    boolean isBlockListPrimaryOwner();
+
+    void setBlockList(BlockList blockList);
+
+    void setBlockList(BlockList blockList, String primaryOwner);
 
     int getLowBound();
 

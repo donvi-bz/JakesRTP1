@@ -1,5 +1,6 @@
 package biz.donvi.jakesRTP1.configuration;
 
+import biz.donvi.jakesRTP1API.configuration.BlockList;
 import biz.donvi.jakesRTP1API.configuration.ConfigurationFactory;
 import biz.donvi.jakesRTP1API.configuration.DistributionProfile;
 import biz.donvi.jakesRTP1API.configuration.RtpProfile;
@@ -33,6 +34,8 @@ public class RtpProfileImpl implements RtpProfile, MultiDebugPrintProvider, Debu
     protected int                 warmup                    = 0;
     protected boolean             warmupCancelOnMove        = true;
     protected boolean             warmupCountDown           = true;
+    protected String              blockList_from            = null;
+    protected BlockList           blockList                 = BlockListImpl.DEFAULTS;
     protected int                 lowBound                  = 32;
     protected int                 highBound                 = 255;
     protected int                 checkRadiusXZ             = 2;
@@ -246,6 +249,30 @@ public class RtpProfileImpl implements RtpProfile, MultiDebugPrintProvider, Debu
     @Override
     public void setWarmupCountDown(boolean warmupCountDown) {
         this.warmupCountDown = warmupCountDown;
+    }
+
+    //// Property:  blockList
+
+    @Override
+    public BlockList getBlockList() {
+        return blockList;
+    }
+
+    @Override
+    public boolean isBlockListPrimaryOwner() {
+        return blockList_from != null && blockList != null && blockList_from.equals(name);
+    }
+
+    @Override
+    public void setBlockList(BlockList blockList) {
+        setBlockList(blockList, name);
+    }
+
+    @Override
+    public void setBlockList(BlockList blockList, String primaryOwner) {
+        if (primaryOwner == null) primaryOwner = name;
+        this.blockList_from = primaryOwner;
+        this.blockList = blockList;
     }
 
     //// Property:  lowBound

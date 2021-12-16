@@ -10,3 +10,4 @@ require-permission: 'special-perm'
 landing-world: 'world' # Is required to function
 distribution: 'mr-boring'
 cooldown: 'mr-boring'
+block-lists: 'mr-boring'
